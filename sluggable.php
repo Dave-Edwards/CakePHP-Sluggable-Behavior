@@ -51,6 +51,7 @@ class SluggableBehavior extends ModelBehavior
 				'slug_field'		=> 'slug',
 				'separator'			=> '_',
 				'title_field'		=> $model->displayField,
+                'update_existing'   => 'false'
 			);
 		}
 
@@ -109,11 +110,13 @@ class SluggableBehavior extends ModelBehavior
 
 		} else {
 
-			// existing record; check to see if slug already present before generating one
+			// existing record; check to see if slug already present before generating one, or whether update_existing option has been set to overwrite an existing one on title change
 			$existing_data = $model->findById($model->id);
 			$existing_slug = $existing_data[$model->alias][$this->settings[$model->alias]['slug_field']];
+			$existing_title = $existing_data[$model->alias][$this->settings[$model->alias]['title_field']];
+            $new_title = $model->data[$model->alias][$this->settings[$model->alias]['title_field']];
 
-			return ( null === $existing_slug || '' === $existing_slug );
+			return ( null === $existing_slug || '' === $existing_slug || ($this->settings[$model->alias]['update_existing'] === 'true' && $existing_title != $new_title));
 
 		}
 	}
