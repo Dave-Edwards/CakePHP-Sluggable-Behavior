@@ -21,6 +21,8 @@ Quick overview:
 
 * Allows slug to be set manually instead of auto-generating it
 
+* Optionally allows an existing slug to be over-written if the title field has changed
+
 
 
 For more information and a sample implementation
