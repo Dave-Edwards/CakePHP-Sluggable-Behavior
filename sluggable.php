@@ -49,9 +49,9 @@ class SluggableBehavior extends ModelBehavior
 		if (!isset($this->settings[$model->alias])) {
 			$this->settings[$model->alias] = array(
 				'slug_field'		=> 'slug',
-				'separator'			=> '_',
+				'separator'		=> '_',
 				'title_field'		=> $model->displayField,
-                'update_existing'   => 'false'
+                                'update_existing'       => 'false'
 			);
 		}
 
@@ -114,7 +114,7 @@ class SluggableBehavior extends ModelBehavior
 			$existing_data = $model->findById($model->id);
 			$existing_slug = $existing_data[$model->alias][$this->settings[$model->alias]['slug_field']];
 			$existing_title = $existing_data[$model->alias][$this->settings[$model->alias]['title_field']];
-            $new_title = $model->data[$model->alias][$this->settings[$model->alias]['title_field']];
+                        $new_title = $model->data[$model->alias][$this->settings[$model->alias]['title_field']];
 
 			return ( null === $existing_slug || '' === $existing_slug || ($this->settings[$model->alias]['update_existing'] === 'true' && $existing_title != $new_title));
 
