@@ -29,14 +29,6 @@ class SluggableBehavior extends ModelBehavior
 	public $settings = array();
 
 	/**
-	 * A suffix counter used in (@link _deduplicate_slug()) recursive function
-	 *
-	 * @var int
-	 * @access private
-	 */
-	private $duplicate_suffix = 0;
-
-	/**
 	 * Set up the Behavior settings
 	 *
 	 * @access public
@@ -45,7 +37,6 @@ class SluggableBehavior extends ModelBehavior
 	 */
 	public function setup(&$model, $settings)
 	{
-
 		if (!isset($this->settings[$model->alias])) {
 			$this->settings[$model->alias] = array(
 				'slug_field'		=> 'slug',
@@ -149,6 +140,7 @@ class SluggableBehavior extends ModelBehavior
 				$slug = substr($slug, 0, $max_length);
 			}
 
+			$this->duplicate_suffix = 0;
 			$slug = $this->_deduplicate_slug($model, $slug);
 			$model->data[$model->alias][$this->settings[$model->alias]['slug_field']] = $slug;
 
