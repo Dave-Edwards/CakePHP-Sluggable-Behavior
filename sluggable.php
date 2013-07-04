@@ -40,7 +40,7 @@ class SluggableBehavior extends ModelBehavior
 		if (!isset($this->settings[$model->alias])) {
 			$this->settings[$model->alias] = array(
 				'slug_field'		=> 'slug',
-				'separator'		=> '_',
+				'separator'		=> '-',
 				'title_field'		=> $model->displayField,
                                 'update_existing'       => 'false'
 			);
@@ -175,13 +175,13 @@ class SluggableBehavior extends ModelBehavior
 			$previous_suffix = $this->duplicate_suffix;
 			$this->duplicate_suffix++;
 
-			$new_slug_suffix = (string)$this->duplicate_suffix;
+			$new_slug_suffix = $this->settings[$model->alias]['separator'].(string)$this->duplicate_suffix;
 			$new_suffix_length = strlen($new_slug_suffix);
 			$slug_length = strlen($slug);
 			$max_length = $model->_schema[$this->settings[$model->alias]['slug_field']]['length'];
 
 			if ($previous_suffix > 0 || $new_suffix_length + $slug_length > $max_length) {
-				$replace_at = -1 * strlen($previous_suffix);
+				$replace_at = -1 * strlen($previous_suffix) -1;
 			} else {
 				$replace_at = $slug_length;
 			}
