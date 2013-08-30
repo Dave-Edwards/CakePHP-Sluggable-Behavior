@@ -4,26 +4,89 @@ Go from this:
 http://example.com/posts/view/23
 
 To this:
-http://example.com/posts/view/great-new-widget-product-released
+http://example.com/posts/view/now-using-slug-instead-of-id
 
 
-Quick overview:
+Quick overview
+==============
 
 * Specify a database field from which the slug should be generated (e.g. headline : 'The Great & the Good')
 
-* Specify a field into which the slug should be stored when new records are created (e.g. url_slug : 'the_great_the_good'). Default is the CakePHP model's displayField
+* Specify a field into which the slug should be stored when new records are created (e.g. url_slug : 'the-great-the-good'). Default is the CakePHP model's displayField
 
-* Specify a slug word separator (defaults to using underscores)
+* Specify a slug word separator (defaults to using hyphens which is search engine friendly)
 
-* Automatically handles potential duplicates, and adds numerical suffixes accordingly
+* Automatically handles potential duplicates, and adds numerical suffixes accordingly (e.g. url_slug : 'the-great-the-good-1')
 
-* Keeps slugs constant even when source field changes (for true permalinks, unlike the dynamic examples out there)
+* Allows you to keeps slugs constant even when source field changes (for true permalinks, unlike the dynamic examples out there)
+
+* Optionally allows an existing slug to be over-written if the title field has changed, can be useful to correct spelling mistakes in the URL etc, but use carefully as once a URL has been picked up by search engines it defeats the object of having a permalink if you are going to change it. I suggest you prevent the further updating of the title field after a fixed time period.
 
 * Allows slug to be set manually instead of auto-generating it
 
-* Optionally allows an existing slug to be over-written if the title field has changed
+
+Instructions
+============
+
+Download the sluggable.php file from Github and put it in your CakePHP app (folder is /app/models/behaviors/).
+
+Database
+--------
+
+Create a VARCHAR column in the relevant database table. The default column name is 'slug', so stick with that unless you have any reason to do otherwise. URLs have a length limit, so I recommend a maximum slug field length of 100 to leave room for the rest of the URL
+
+Model
+-----
+
+For the basic installation, add the following to the appropriate model in your CakePHP app
+
+var $actsAs = array(
+	'Sluggable' > array(
+		'title_field' => 'title'
+	)
+);
+
+The title_field is the database field from which the slug will be generated – usually the title of your record. You don’t have to specify this. By default, it uses CakePHP’s displayField. You can specify a few other options, the default values for which are shown below:
+
+var $actsAs = array(
+	'Sluggable' => array(
+		'title_field' => $model->displayField,
+		'slug_field' => 'slug',
+		'slug_max_length' => 100,
+		'separator' => '_',
+		'update_existing' => 'true'
+	)
+);
+
+Check that the maximum length matches the length of your VARCHAR field.
+
+Controller
+----------
+
+Here’s a basic controller action example to pull a single record using its slug instead of its ID:
+
+function view($slug = null)
+{
+	$post = $this->Post->findBySlug($slug);
+
+	if (!$post){
+		$this->cakeError('error404');
+	}
+	$this->set('post', $post);
+}
 
 
+View
+----
 
-For more information and a sample implementation
-http://aaronpollock.co.uk/sluggable/
+Links to this page would look like this:
+
+http://example.com/posts/view/the-great-the-good
+
+Using the HTML helper to generate the link:
+
+$html->link('Great Story', array(
+	'controller'=>'posts',
+	'action'=>'view',
+	$post['Post']['slug']
+));
